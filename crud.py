@@ -4,13 +4,11 @@ from database import SessionDep
 from models import StudentModel
 from sqlalchemy import select
 from typing import Optional
+
 class StudentAddSchema(BaseModel):
-    # name: Optional[str] = Field(max_length=30)
-    # course: Optional[int] = Field(ge=1, le=6)
-    # av_score: Optional[float] = Field(ge=2, le=5)
-    name: Optional[str] = None
-    course: Optional[int] = None
-    av_score: Optional[float] = None
+    name: Optional[str] = Field(default=None, max_length=30)
+    course: Optional[int] = Field(default=None, ge=1, le=6)
+    av_score: Optional[float] = Field(default=None, ge=2, le=5)
 
     model_config = ConfigDict(extra="forbid")
 
