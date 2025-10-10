@@ -26,7 +26,7 @@ async def add_student(data: StudentAddSchema, session: SessionDep):
     )
     session.add(new_student)
     await session.commit()
-    return {"ok": True}
+    return {"ok": True, "message": f"Student {data.name} is appended"}
 
 @router.get("/students", tags=["Студенты🧑‍🎓"], summary="Получение всех студентов")
 async def get_students(session: SessionDep):
@@ -35,8 +35,11 @@ async def get_students(session: SessionDep):
     return res.scalars().all()
 
 @router.get("/students/{id}", tags=["Студенты🧑‍🎓"], summary="Получение конкретного студента")
-async def get_student(student_id: int, session: SessionDep):
-    student_obj = await session.get(StudentModel, student_id)
+async def get_student(id: int, session: SessionDep):
+    student_obj = await session.get(StudentModel, id)
+    #query = select(StudentModel).where(StudentModel.id == id)
+    #res = await session.execute(query)
+    #return res.scalars().first()
     return student_obj
 
 @router.patch("/students/{id}", tags={"Студенты🧑‍🎓"}, summary="Обновление конкретного студента")
@@ -52,7 +55,7 @@ async def update_student(student_id: int, data: StudentAddSchema, session: Sessi
 
     await session.commit()
 
-    return {"ok": True, "message": "The student is successfully updated"}
+    return {"ok": True, "message": f"The student with id {student_id} is successfully updated"}
 
 @router.delete("/students/", tags=["Студенты🧑‍🎓"], summary="Удаление всех студентов")
 async def delete_students(session: SessionDep):
@@ -60,7 +63,7 @@ async def delete_students(session: SessionDep):
     await session.execute(delete(StudentModel))
 
     await session.commit()
-    return {"ok": True}
+    return {"ok": True, "message": "All students are deleted"}
 
 @router.delete("/students/{id}", tags=["Студенты🧑‍🎓"], summary="Удаление конкретного студента")
 async def delete_students(student_id: int, session: SessionDep):
@@ -72,4 +75,4 @@ async def delete_students(student_id: int, session: SessionDep):
 
     await session.commit()
 
-    return {"ok": True}
+    return {"ok": True, "message": f"The student with id {student_id} is deleted"}

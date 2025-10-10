@@ -1,0 +1,34 @@
+services:
+  app: #Название нашего приложения
+    build: #Сначала мы указываем параметры для build
+      dockerfile: ./Dockerfile
+      context: ./ # Текущая дериктория, т.е. где для сборки искать Dockerfile
+    environment:
+      - DATABASE_URL_asyncpg=postgresql+asyncpg://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+    ports:
+      - "8000:8000" #Из хоста внутрь контейнера
+    volumes:
+      - .:/app
+    depends_on:
+      pg:
+        condition: service_healthy
+
+  pg:
+    image: postgres:16.4
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data #Где-то в нашей локальной файловой системе сохранятся данные из БД.
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+
+volumes:
+  pgdata:
